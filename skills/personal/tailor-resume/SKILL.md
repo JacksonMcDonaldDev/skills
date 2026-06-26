@@ -87,16 +87,20 @@ else is reproduced **byte-for-byte**.
    genuinely support → list it. This is the user's interview-prep sheet ("they want
    Kubernetes; you have no container-orchestration evidence").
 
-5. **Write the outputs** to `~/resumes/tailored/` (create it if missing):
+5. **Write the outputs** to a **per-company subfolder** `~/resumes/tailored/{company}/`
+   (create the subfolder, and its parents, if missing). `{company}` = the company name
+   slugified (lowercase, hyphens); fall back to a timestamp if the company can't be parsed.
+   Inside that folder write:
    - `{slug}.json` — the tailored resume. `{slug}` = `{company}-{role-title}` slugified
      (lowercase, hyphens); fall back to a timestamp if company/role can't be parsed.
    - `{slug}.gaps.md` — the gap report.
-   **Never write to the master path.** If `{slug}.json` already exists, suffix `-2`, `-3`,
-   … rather than overwrite.
+   **Never write to the master path.** If `{slug}.json` already exists in the subfolder,
+   suffix `-2`, `-3`, … rather than overwrite. Reuse an existing company subfolder for
+   repeat applications to the same company — only the filenames disambiguate per role.
 
 6. **Validate — do not declare done until this passes.** Run the bundled checker:
    ```sh
-   python3 ~/.claude/skills/tailor-resume/scripts/validate.py <MASTER_PATH> ~/resumes/tailored/{slug}.json
+   python3 ~/.claude/skills/tailor-resume/scripts/validate.py <MASTER_PATH> ~/resumes/tailored/{company}/{slug}.json
    ```
    It asserts the output parses as JSON, that every frozen field is byte-identical to the
    master, that no item was added or removed, that skill keywords are a subset of the
