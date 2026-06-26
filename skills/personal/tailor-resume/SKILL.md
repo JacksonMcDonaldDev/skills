@@ -1,6 +1,6 @@
 ---
 name: tailor-resume
-description: Tailor a Reactive Resume JSON export to a specific job posting, emitting a new JSON in the identical schema plus a gap report. ONLY run when the user explicitly types /tailor-resume — do NOT auto-trigger on general resume talk ("help with my resume", "review my CV"). Personal skill for bigbox; master resume defaults to ~/Downloads/public-resume.json.
+description: Tailor a Reactive Resume JSON export to a specific job posting, emitting a new JSON in the identical schema plus a gap report. ONLY run when the user explicitly types /tailor-resume — do NOT auto-trigger on general resume talk ("help with my resume", "review my CV"). Personal skill for bigbox; master resume defaults to ~/Downloads/master-resume.json.
 ---
 
 # tailor-resume
@@ -14,8 +14,8 @@ and selects content already in the master — it never invents facts.
 
 ## Inputs
 
-1. **Master resume path** — defaults to `~/Downloads/public-resume.json`. Always announce
-   the default ("Using `~/Downloads/public-resume.json` as master — pass a path to
+1. **Master resume path** — defaults to `~/Downloads/master-resume.json`. Always announce
+   the default ("Using `~/Downloads/master-resume.json` as master — pass a path to
    override.") so the user can redirect. Read it; if it's missing or unparseable, **stop
    and ask**.
 2. **Job description** — accept, in priority order:
