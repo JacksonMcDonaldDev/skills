@@ -5,7 +5,8 @@ description: Operate Jack's machine fleet from the Mac — reachability/tunnel p
 
 # Fleet operations
 
-Design + rationale live in `~/server-kb/fleet.md` (canonical, git-synced).
+Design + rationale live in `~/kb/fleet.md` (the server-kb repo, canonical,
+git-synced via the auto-sync hooks — see `~/kb/scripts/`).
 This skill is the Mac-side operating procedure.
 
 ## Machines
@@ -49,7 +50,7 @@ ssh bigbox '~/.local/bin/remote-mode off'     # back to normal idle/suspend
 Turn it **on** before any run that must outlive the SSH session; **off** when
 done. Safety net if forgotten: hypridle's suspend action is a guard that skips
 suspend while SSH sessions or `claude` processes exist — but don't rely on it.
-Details: `~/server-kb/bigbox/remote-mode.md`.
+Details: `~/kb/bigbox/remote-mode.md`.
 
 ## Dispatching agent work
 
