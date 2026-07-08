@@ -60,8 +60,10 @@ Details: `~/server-kb/bigbox/remote-mode.md`.
 - **Supervised** runs: on the host as `jack`, permission prompts as guardrail.
 - **Unattended** (`--dangerously-skip-permissions`): only inside a sandbox or
   devcontainer — never on the bare host.
-- Long-run feedback: Claude hooks on bigbox push to `https://ntfy.lan/claude`
-  (Stop = run finished, Notification = waiting on input).
+- Long-run feedback: Claude hooks on bigbox push to
+  `https://ntfy.home.jacksonmcdonald.me/claude` (Stop = run finished,
+  Notification = waiting on input). Publisher: `~/.local/bin/claude-ntfy`.
+  Note: bigbox must use helios (192.168.68.56) as DNS to resolve that host.
 
 ## Rules
 
