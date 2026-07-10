@@ -1,13 +1,23 @@
 ---
 name: fleet
-description: Operate Jack's machine fleet from the Mac — reachability/tunnel preflight, wake bigbox via helios WoL API, toggle remote-mode, dispatch agent work to bigbox over SSH/tmux. Use when asked to wake/reach/dispatch work to bigbox, hyperion, or helios, check why a fleet machine is unreachable, or start a remote agent run.
+description: Operate Jack's machine fleet — reachability/tunnel preflight, wake bigbox via helios WoL API, toggle remote-mode, dispatch agent work to bigbox over SSH/tmux. Host-aware — first identify the current host (Mac controller vs bigbox itself) and skip the steps that don't apply there. Use when asked to wake/reach/dispatch work to bigbox, hyperion, or helios, check why a fleet machine is unreachable, or start a remote agent run.
 ---
 
 # Fleet operations
 
 Design + rationale live in `~/kb/fleet.md` (the server-kb repo, canonical,
 git-synced via the auto-sync hooks — see `~/kb/scripts/`).
-This skill is the Mac-side operating procedure.
+
+## Which host am I on? — always first
+
+Check `hostname` before anything else; the procedure branches on it:
+
+- **`pop-os`** → you are **on bigbox**. Skip preflight and wake entirely (the
+  machine you'd be waking is the one you're on). hyperion/helios are on the
+  same LAN and hostnames resolve (bigbox uses helios as DNS) — plain
+  `ping`/`curl` by name works. See *On bigbox* notes per section below.
+- **anything else (Mac)** → thin controller; full procedure applies,
+  starting with preflight.
 
 ## Machines
 
@@ -19,10 +29,11 @@ This skill is the Mac-side operating procedure.
 | Mac | — | Thin controller | chezmoi + server-kb source of truth. |
 
 SSH aliases (`bigbox`, `hyperion`, `helios`) come from `~/.ssh/config`.
-**Gotcha:** bare hostnames don't resolve for non-SSH tools on the Mac (no
-LAN DNS search domain) — use the IPs above for curl/ping.
+**Mac gotcha:** bare hostnames don't resolve for non-SSH tools on the Mac (no
+LAN DNS search domain) — use the IPs above for curl/ping. (Not an issue on
+bigbox.)
 
-## Preflight — always first
+## Preflight (Mac only)
 
 ```bash
 nc -z -w 3 192.168.68.56 22 && echo helios-reachable
@@ -39,24 +50,34 @@ curl -s -m 5 -X POST http://192.168.68.56:9090/wake/bigbox
 until ssh -o ConnectTimeout=3 -o BatchMode=yes bigbox true 2>/dev/null; do sleep 3; done
 ```
 
+**On bigbox:** none of this applies to bigbox itself. If helios or hyperion
+seem unreachable *from bigbox*, that's a LAN/service problem, not a tunnel
+problem — diagnose directly (`ping helios`, check the service), don't reach
+for WireGuard.
+
 ## remote-mode (keep bigbox awake for a run)
 
+On bigbox it's a local command; from the Mac, wrap it in ssh:
+
 ```bash
-ssh bigbox '~/.local/bin/remote-mode on'      # sleep blocked, displays dark
-ssh bigbox '~/.local/bin/remote-mode status'
-ssh bigbox '~/.local/bin/remote-mode off'     # back to normal idle/suspend
+~/.local/bin/remote-mode on        # sleep blocked, displays dark (prefix with `ssh bigbox` from the Mac)
+~/.local/bin/remote-mode status
+~/.local/bin/remote-mode off       # back to normal idle/suspend
 ```
 
-Turn it **on** before any run that must outlive the SSH session; **off** when
-done. Safety net if forgotten: hypridle's suspend action is a guard that skips
-suspend while SSH sessions or `claude` processes exist — but don't rely on it.
-Details: `~/kb/bigbox/remote-mode.md`.
+Turn it **on** before any run that must outlive the session — an SSH session
+from the Mac, or a local run Jack starts on bigbox before walking away;
+**off** when done. Safety net if forgotten: hypridle's suspend action is a
+guard that skips suspend while SSH sessions or `claude` processes exist — but
+don't rely on it. Details: `~/kb/bigbox/remote-mode.md`.
 
 ## Dispatching agent work
 
-- Interactive `ssh bigbox` lands in tmux session `main` — run `claude` there;
-  disconnects/lid-closes are free. Non-interactive `ssh bigbox '<cmd>'` and scp
-  skip tmux.
+- From the Mac: interactive `ssh bigbox` lands in tmux session `main` — run
+  `claude` there; disconnects/lid-closes are free. Non-interactive
+  `ssh bigbox '<cmd>'` and scp skip tmux.
+- On bigbox: just run `claude` locally; use tmux `main` if the run should
+  survive the terminal, and remote-mode if it should survive idle/suspend.
 - Projects live in `~/code/<project>`; parallel worktrees in `~/code/worktrees/`.
 - **Supervised** runs: on the host as `jack`, permission prompts as guardrail.
 - **Unattended** (`--dangerously-skip-permissions`): only inside a sandbox or
