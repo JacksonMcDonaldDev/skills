@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# skills-sync.sh — one command for the whole loop, on either machine:
+# sync-fork.sh — one command for the whole loop, on either machine:
 #
 #   fetch upstream -> merge -> fetch origin -> merge -> push origin -> sync-skills.sh
 #
@@ -18,7 +18,7 @@
 #   * Never force-pushes. bigbox pushes to this fork too.
 #   * Never stashes. A dirty tree stops the run instead.
 #   * Re-execs under bash 4+ (macOS /bin/bash is 3.2.57 and sync-skills.sh needs
-#     `declare -A`), so plain `./scripts/skills-sync.sh` works on both hosts.
+#     `declare -A`), so plain `./scripts/sync-fork.sh` works on both hosts.
 #
 # Merging is this script's job; sync-skills.sh is called at the end for symlinks
 # only, with none of its git flags. It is called even when the run fails partway,
