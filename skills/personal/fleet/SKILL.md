@@ -71,6 +71,13 @@ from the Mac, or a local run Jack starts on bigbox before walking away;
 guard that skips suspend while SSH sessions or `claude` processes exist — but
 don't rely on it. Details: `~/kb/bigbox/remote-mode.md`.
 
+While remote-mode is on, an idle watcher (`remote-mode-idle`, driven by a 5-min
+timer that starts and stops with the unit) pings Jack's phone via ntfy `general`
+once the box has gone an hour with no terminal I/O, no desk presence and no
+`claude` CPU activity, then hourly after that. It only notifies — it never
+suspends the box or flips remote-mode off. `remote-mode status` prints its
+current verdict, the quickest way to see whether bigbox thinks it's busy and why.
+
 ## Dispatching agent work
 
 - From the Mac: interactive `ssh bigbox` lands in tmux session `main` — run
