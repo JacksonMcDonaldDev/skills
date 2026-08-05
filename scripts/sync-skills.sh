@@ -5,7 +5,9 @@
 #   ~/.claude/skills/<name> -> ~/.agents/skills/<name> -> ~/.agents/skills-repo/skills/<cat>/<name>
 # (Matt's own scripts/link-skills.sh is single-tier and has no pruning; this is the local replacement.)
 #
-# Source of truth: every skills/<category>/<name>/SKILL.md in the clone, EXCEPT skills/deprecated/*.
+# Source of truth: every SKILL.md under skills/ in the clone, at any bucket depth,
+# EXCEPT any path containing a deprecated/ segment (skills/deprecated/*, skills/jack/deprecated/*, ...).
+# Buckets nest: Matt's are skills/<bucket>/, mine are namespaced under skills/jack/<bucket>/.
 #
 # Flags:
 #   --pull        git pull --ff-only origin main   (catch up your own fork; safe)
@@ -129,7 +131,7 @@ while IFS= read -r skillmd; do
   reldir="${skillmd#"$REPO"/}"; reldir="${reldir%/SKILL.md}"   # skills/<cat>/<name>
   name="$(basename "$reldir")"
   ALL_NAMES["$name"]=1
-  case "$reldir" in skills/deprecated/*) continue ;; esac      # never wire deprecated
+  case "$reldir" in */deprecated/*) continue ;; esac           # never wire deprecated (any bucket depth)
   [ -n "${IGNORED[$name]:-}" ] && continue                     # never wire ignored
   if [ -n "${WANT[$name]:-}" ]; then
     echo "COLLISION: '$name' in ${WANT[$name]} and $reldir" >&2; collision=1
