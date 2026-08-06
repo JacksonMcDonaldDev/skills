@@ -8,6 +8,8 @@ Skills are organized into bucket folders under `skills/`:
 
 My own skills are namespaced under `skills/jack/`, which is a **namespace, not a bucket** — its buckets sit one level down: `jack/personal/` (mine, active) and `jack/deprecated/` (mine, retired). Everything under `jack/` is fork-local and never promoted. Keeping it off upstream's paths is what makes my side of an `upstream/main` merge conflict-free; see [skills/jack/README.md](./skills/jack/README.md).
 
+That applies to `skills/jack/` only. **This file itself is the one place the fork deliberately diverges from upstream, so it is expected to conflict on an `upstream/main` merge — keep the fork's side.** Re-apply the fork's changes onto upstream's new text rather than taking the whole file; [.agents/adr/0003-fork-local-divergences-from-upstream.md](./.agents/adr/0003-fork-local-divergences-from-upstream.md) lists each divergence and which one must never be lost.
+
 Every skill in `engineering/` or `productivity/` (the **promoted** buckets) must have a reference in the top-level `README.md` and an entry in `.claude-plugin/plugin.json`'s `skills` array (the Claude Code plugin ships exactly the promoted set). Skills in `misc/`, `in-progress/`, `deprecated/`, and anything under `jack/` must not appear in either.
 
 Install commands are copied verbatim from [.agents/install-block.md](./.agents/install-block.md). `.claude-plugin/marketplace.json` makes the repo its own single-plugin marketplace — a fallback the install block explains, not the documented route. Run `claude plugin validate . --strict` after touching either manifest. Why a Claude plugin but not (yet) a Codex one lives in [.agents/adr/0002-ship-as-a-claude-code-plugin.md](./.agents/adr/0002-ship-as-a-claude-code-plugin.md).
