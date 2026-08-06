@@ -25,22 +25,25 @@
 # so long as something was merged — otherwise a failed push would leave newly
 # merged skills committed but unwired.
 #
-# ASSUMPTIONS — three open questions were unanswered when this was written. The
-# conservative answer was taken in each case; change it here if it's wrong.
+# DESIGN DECISIONS — all four ratified 2026-08-05. Each started as the
+# conservative answer to a question nobody had answered yet; they are now
+# confirmed as the intended behaviour. Settled, not provisional — change one
+# only as a deliberate decision, not because it looks like an oversight.
 #   1. MANUAL ONLY. No launchd/systemd timer is installed or implied. The script
 #      assumes a human is watching the output, which is why it may push at all.
+#      This is the one decision that blocks something else: a timer-driven sync
+#      would first have to drop the push or put it behind --no-push.
 #   2. CONFLICT MEANS STOP. On conflict it reports the paths and stops. It never
 #      auto-resolves and never leaves you in a conflicted worktree. Note it says
 #      nothing about *earlier* steps: if upstream merges cleanly and origin then
 #      conflicts, that upstream merge commit stays — it is committed, not lost,
-#      and the run says so before it stops.
+#      and the run says so before it stops. Verified end-to-end 2026-08-05.
 #   3. in-progress/ SKILLS ARE NOT PRUNED. sync-skills.sh wires them exactly as
 #      it does today; nothing here changes that.
-#
-# One nuance on "dirty": tracked changes (staged or not) stop the run. Untracked
-# files only print a note — otherwise this script would refuse to run until it
-# was itself committed, and git already refuses any merge that would clobber an
-# untracked file.
+#   4. "DIRTY" MEANS TRACKED. Tracked changes (staged or not) stop the run.
+#      Untracked files only print a note — otherwise this script would refuse to
+#      run until it was itself committed, and git already refuses any merge that
+#      would clobber an untracked file.
 
 set -euo pipefail
 
